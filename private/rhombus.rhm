@@ -1,0 +1,90 @@
+#lang rhombus
+import:
+  "html.rhm" open
+  shrubbery/render
+  shrubbery/render/define.macros as render_macros
+  lib("rhombus/scribble/private/typeset-key-help.rkt").#{target-id-key-symbol}
+  lib("scribble/xref.rkt")
+  lib("setup/xref.rkt").#{load-collections-xref}
+  lib("rhombus/scribble/private/rhombus-spacer.rhm") open
+
+export:
+  rhombus
+  rhombusblock
+  rhombusblock_etc
+  typeset
+
+span.def literal:
+  ~color: "#228b22"
+span.def paren:
+  ~color: "#843c24"
+span.def comment:
+  ~color: "#c2741f"
+
+class Fmt(s, style = #false)
+
+fun flatten(p):
+  match p
+  | PairList[a, ...]: List.append(flatten(a), ...)
+  | a: [a]
+
+fun typeset_one(str, style):
+  match style
+  | #'value:
+      literal: str
+  | #'paren:
+      paren: str
+  | #'comment:
+      comment: str
+  | ~else:
+      str
+
+fun typeset([[Fmt(str, style), ...], ...]):
+  [[[typeset_one(str, style), ...], "\n"], ...]
+
+def xrefs = #{load-collections-xref}()
+
+def (render_line, render_block):
+  render.make(~render: fun (style, str): Fmt(str, style),
+              ~render_in_space: fun (space, str, id,
+                                     ~prefix: _ = #false,
+                                     ~suffix: suffix_target = #false,
+                                     #{#:suffix-space}: suffix_space = #false):
+                                  let tag:
+                                    xref.#{xref-binding->definition-tag}(xrefs,
+                                                                         id,
+                                                                         #false,
+                                                                         ~space: space,
+                                                                         ~suffix:
+                                                                           if suffix_target
+                                                                           | PairList(#{target-id-key-symbol}(suffix_target),
+                                                                                      suffix_space)
+                                                                           | space)
+                                  cond
+                                  | tag:
+                                      let (p, anchor) = xref.#{xref-tag->path+anchor}(xrefs, tag)
+                                      let ps = Path.split(p)
+                                      Fmt(
+                                        a:
+                                          ~href:
+                                            "https://docs.racket-lang.org/" +& ps[ps.length()-2] +& "/" +& ps[ps.length()-1]
+                                              +& "#" +& anchor
+                                          str
+                                      )
+                                  | ~else:
+                                      Fmt(str),
+              ~render_whitespace: fun (n): Fmt(String.make(n, Char" ")),
+              ~render_indentation: fun (ws_len, ws_offset, orig_len, orig_size, ws_style): Fmt(String.make(ws_len, Char" ")),
+              ~render_line: fun(n): flatten(n),
+              ~render_one_line: fun(ns): flatten(ns),
+              ~render_lines: fun (ns): flatten(ns),
+              ~rendered_shape: fun (_, len, style): values(len, style),
+              ~is_rendered: fun (s): s is_a Fmt)
+
+render_macros (rhombus,
+               rhombusblock,
+               rhombusblock_etc):
+  ~render_line: render_line
+  ~render_block: render_block
+  ~escape: #,
+  ~result: Fmt

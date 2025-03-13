@@ -1,11 +1,13 @@
 #lang rhombus
 import:
   rhombus/collect
+  lib("rhombus/scribble/private/rhombus-spacer.rhm") open
   "private/html.rhm" open  
   "private/slide_show.rhm" open
   "private/rhombus.rhm" open
   meta_label:
-    rhombus open
+    rhombus open:
+      except str // workaround spacer limitation, for now
     only_meta 0:
       rhombus/meta open
 
@@ -61,6 +63,11 @@ a.def button:
   ~align_self: "start"
   ~white_space: "nowrap"
 
+div.def tabular:
+  ~display: "grid"            
+  ~grid_template_columns: "repeat(2, auto)"
+  ~max_width: "22em"
+                         
 fun code(stx :: Syntax):
   stx.to_source_string(~keep_prefix: #true, ~keep_suffix: #true)
 
@@ -99,7 +106,7 @@ def examples:
        // `:` for nesting, `|` for alternatives,
        // `::` for type-like checked annotations
                             
-       fun repeat(str :: String, n :: NonegInt) :: List:
+       fun repeat(str :: String, n :: NonnegInt) :: List:
          if n == 0
          | []
          | [str] ++ repeat(str, n-1)
@@ -157,7 +164,7 @@ def examples:
          | '$lhs ... * $rhs ...':
              interp('$lhs ...') * interp('$rhs ...')
                              
-       interp('3 * 4 + 1')
+       interp('3 * 4 + 1') // '' quotes syntax, not a string
        // ⇒ 8
      ),
     (@rhombusblock_etc():
@@ -291,43 +298,36 @@ write(
                 "... which means that Rhombus is compiled to machine code on-the-fly, "
                 "benefits from a mature tool chain and package system, "
                 "and has many practical libraries within reach."
-          column:
+          tabular:
             ~style: (css:
-                       ~gap: "1em")
-            row:
-              ~style: (css:
-                         ~gap: "1em")
-              button:
-                ~href: "download.html"
-                @str{Download}
+                       ~gap: "1em"
+                       ~justify_items: "start")
+            button:
+              ~href: "download.html"
+              @str{Download}
+            small_prose:
+              "Rhombus is ready for "
+              b:
+                ~style: (css:
+                           ~white_space: "nowrap")
+                "early adopters"
+              "."
+            button:
+              ~href: "https://docs.racket-lang.org/rhombus/index.html"
+              @str{Documentation}
+            div:
+              ~style: (css: ~margin: "0.25em 0 0 0")
               small_prose:
-                "Rhombus is ready for "
-                b:
-                  ~style: (css:
-                             ~white_space: "nowrap")
-                  "early adopters"
+                "Includes a "
+                a:
+                  ~href: "https://docs.racket-lang.org/rhombus/Quick_Start.html"
+                  "Quick Start"
                 "."
-            row:
-              ~style: (css:
-                         ~gap: "1em")
-              button:
-                ~href: "https://docs.racket-lang.org/rhombus/index.html"
-                @str{Documentation}
-              div:
-                ~style: (css: ~margin: "0.25em 0 0 0")
-                small_prose:
-                  "Includes a "
-                  a:
-                    ~href: "https://docs.racket-lang.org/rhombus/Quick_Start.html"
-                    "Quick Start"
-                  "."
-            row:
-              ~style: (css: ~gap: "1em")
-              button:
-                ~href: "https://github.com/racket/rhombus"
-                @str{Work in Progress}
-              small_prose:
-                  "Complete and stable enough to be useful, but not all done."
+            button:
+              ~href: "https://github.com/racket/rhombus"
+              @str{Work in Progress}
+            small_prose:
+                "Complete and stable enough to be useful, but not all done."
 )
 
 write(

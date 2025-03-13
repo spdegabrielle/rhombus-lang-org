@@ -1,4 +1,4 @@
 
 .PHONE: index
 index:
-	racket index.rhm
+	rhombus index.rhm

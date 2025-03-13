@@ -21,6 +21,9 @@ span.def paren:
 span.def comment:
   ~color: "#c2741f"
 
+a.def doc_a:
+  ~color: "rgb(0, 119, 170)"
+
 class Fmt(s, style = #false)
 
 fun flatten(p):
@@ -65,7 +68,7 @@ def (render_line, render_block):
                                       let (p, anchor) = xref.#{xref-tag->path+anchor}(xrefs, tag)
                                       let ps = Path.split(p)
                                       Fmt(
-                                        a:
+                                        doc_a:
                                           ~href:
                                             "https://docs.racket-lang.org/" +& ps[ps.length()-2] +& "/" +& ps[ps.length()-1]
                                               +& "#" +& anchor

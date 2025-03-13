@@ -75,6 +75,9 @@ def_tag a
 def_tag br
 def_tag b
 def_tag i
+def_tag li
+def_tag ul
+def_tag p
 
 decl.macro 'def_ns $ns_id':
   '«     

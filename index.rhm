@@ -32,6 +32,9 @@ div.def mySlides:«»
 span.def dot:«»
 div.def text:«»
 
+span.def tt:
+  ~font_family: "'Fira-Mono', monospace"
+
 div.def column:
   ~margin_left: "3em"
   ~margin_right: "3em"
@@ -40,6 +43,11 @@ div.def column:
   ~align_items: "left"
   ~max_width: "20em"
 
+div.def row:
+  ~display: "flex"
+  ~flex_direction: "row"
+  ~align_items: "top"
+
 a.def button:
   ~padding: "10px"
   ~padding_top: "13px"
@@ -47,9 +55,11 @@ a.def button:
   ~background_color: "#3e5ba9"
   ~color: "white"
   ~font_family: name_font
+  ~font_size: "14pt"
   ~text_decoration: "none"
   ~transform: "skew(-0.3rad)"
   ~align_self: "start"
+  ~white_space: "nowrap"
 
 fun code(stx :: Syntax):
   stx.to_source_string(~keep_prefix: #true, ~keep_suffix: #true)
@@ -70,7 +80,7 @@ def examples:
        // ⇒ 50
      ),
     (@rhombusblock_etc():
-       // pattern matching on instances, lists, and maps
+       // pattern matching on objects, lists, and maps
 
        class Rect(left, top, right, bottom)
                             
@@ -179,127 +189,239 @@ def examples:
      )
   ]
 
-println("writing index.html")
-Port.Output.using ~file "index.html":
-  ~exists: #'truncate
-  println("<!DOCTYPE html>")
-  write_html(
-    html:
-      head:
-        meta:
-          ~content: "text/html; charset=utf-8"
-          ~http_equiv: "content-type"
-        style:
-          @str|{@import url("https://docs.racket-lang.org/manual-fonts.css");}|          
-        style:
-          slide_show_style
-        style:
-          all_styles()
-        script:
-          slide_show_script
-        title:
-          @str{The Rhombus Programming Language}
-      body:
+def usual_head:
+  @List(
+    meta:
+      ~content: "text/html; charset=utf-8"
+      ~http_equiv: "content-type"
+    style:
+      @str|{@import url("https://docs.racket-lang.org/manual-fonts.css");}|          
+    style:
+      slide_show_style
+    style:
+      all_styles()
+    script:
+      slide_show_script
+  )
+
+fun write(dest, doc):
+  println("writing " +& dest)
+  Port.Output.using ~file dest:
+    ~exists: #'truncate
+    println("<!DOCTYPE html>")
+    write_html(doc)
+
+write(
+  "index.html",      
+  html:
+    head:
+      usual_head      
+      title:
+        @str{The Rhombus Programming Language}
+    body:
+      div:
+        ~style: (css:
+                   ~display: "flex"
+                   ~flex_direction: "column"
+                   ~align_items: "center"
+                   ~padding_top: "10px")
         div:
           ~style: (css:
                      ~display: "flex"
-                     ~flex_direction: "column"
-                     ~align_items: "center"
-                     ~padding_top: "10px")
-          div:
+                     ~flex_direction: "row"
+                     ~align_items: "center")
+          img:
+            ~src: "rhombus-logo.svg"
+            ~width: 470 / 4.0
+            ~height: 329 / 4.0
             ~style: (css:
-                       ~display: "flex"
-                       ~flex_direction: "row"
-                       ~align_items: "center")
-            img:
-              ~src: "rhombus-logo.svg"
-              ~width: 470 / 4.0
-              ~height: 329 / 4.0
+                       ~vertical_align: "middle")
+          span:
+            ~style: (css:
+                       ~margin_top: "20px"
+                       ~vertical_align: "middle"
+                       ~padding_left: "10px")
+            namefont:
+              @str{Rhombus}
+        div:
+          ~style: (css: ~padding: "20px")
+          prose:
+            @str{Rhombus is a general-purpose programming language that is easy to use and uniquely customizable.}
+        div:
+          ~style: (css:
+                     ~display: "flex"
+                     ~flex_direction: "row")
+          prev:
+            ~onclick: "plusSlides(-1)"
+            "\u276e"
+          slideshow_container:
+            for List (example in examples):
+              mySlides:
+                pre:
+                  typeset(example)
+          next:
+            ~onclick: "plusSlides(1)"
+            "\u276f"
+        div:
+          ~style: (css: ~text_align: "center")
+          for List (example in examples,
+                    i in 1..):
+            dot: ~onclick: "currentSlide(" +& i +& ")"
+        row:
+          ~style: (css: ~padding_top: "3em")
+          column:
+            div:
               ~style: (css:
-                         ~vertical_align: "middle")
-            span:
+                         ~display: "flex"
+                         ~flex_direction: "row"
+                         ~align_items: "center")
+              img:
+                ~src: "racket-logo.svg"
+                ~width: 50
+                ~height: 50
+                ~style: (css: ~padding_right: "0.5em")
+              div:
+                prose:
+                  "Built on "
+                  a:
+                    ~href: "http://racket-lang.org/"
+                    "Racket"
+            div:
+              small_prose:
+                "... which means that Rhombus is compiled to machine code on-the-fly, "
+                "benefits from a mature tool chain and package system, "
+                "and has many practical libraries within reach."
+          column:
+            ~style: (css:
+                       ~gap: "1em")
+            row:
               ~style: (css:
-                         ~margin_top: "20px"
-                         ~vertical_align: "middle"
-                         ~padding_left: "10px")
-              namefont:
-                @str{Rhombus}
-          div:
-            ~style: (css: ~padding: "20px")
-            prose:
-              @str{Rhombus is a general-purpose programming language that is easy to use and uniquely customizable.}
-          div:
-            ~style: (css:
-                       ~display: "flex"
-                       ~flex_direction: "row")
-            prev:
-              ~onclick: "plusSlides(-1)"
-              "\u276e"
-            slideshow_container:
-              for List (example in examples):
-                mySlides:
-                  pre:
-                    typeset(example)
-            next:
-              ~onclick: "plusSlides(1)"
-              "\u276f"
-          div:
-            ~style: (css: ~text_align: "center")
-            for List (example in examples,
-                      i in 1..):
-              dot: ~onclick: "currentSlide(" +& i +& ")"
-          div:
-            ~style: (css:
-                       ~display: "flex"
-                       ~flex_direction: "row"
-                       ~align_items: "top"
-                       ~padding_top: "3em")
-            column:
-              div:
-                ~style: (css:
-                           ~display: "flex"
-                           ~flex_direction: "row"
-                           ~align_items: "center")
-                img:
-                  ~src: "racket-logo.svg"
-                  ~width: 50
-                  ~height: 50
-                  ~style: (css: ~padding_right: "0.5em")
-                div:
-                  prose:
-                    "Built on "
-                    a:
-                      ~href: "http://racket-lang.org/"
-                      "Racket"
-              div:
-                small_prose:
-                  "... which means that Rhombus is compiled to machine code on-the-fly, "
-                  "benefits from a mature tool chain and package system, "
-                  "and has many practical libraries within reach."
-            column:
+                         ~gap: "1em")
+              button:
+                ~href: "download.html"
+                @str{Download}
+              small_prose:
+                "Rhombus is ready for "
+                b:
+                  ~style: (css:
+                             ~white_space: "nowrap")
+                  "early adopters"
+                "."
+            row:
+              ~style: (css:
+                         ~gap: "1em")
               button:
                 ~href: "https://docs.racket-lang.org/rhombus/index.html"
                 @str{Documentation}
               div:
                 ~style: (css: ~margin: "0.25em 0 0 0")
                 small_prose:
-                  "Includes "
+                  "Includes a "
                   a:
                     ~href: "https://docs.racket-lang.org/rhombus/Quick_Start.html"
                     "Quick Start"
                   "."
+            row:
+              ~style: (css: ~gap: "1em")
               button:
-                ~style: (css: ~margin: "1em 0 0 0")
                 ~href: "https://github.com/racket/rhombus"
                 @str{Work in Progress}
-              div:
-                ~style: (css: ~margin: "0.25em 0 0 0")
-                small_prose:
-                  "Rhombus is ready for "
+              small_prose:
+                  "Complete and stable enough to be useful, but not all done."
+)
+
+write(
+  "download.html",      
+  html:
+    head:
+      usual_head      
+      title:
+        @str{Getting Rhombus}
+    body:
+      div:
+        ~style: (css:
+                   ~display: "flex"
+                   ~flex_direction: "column"
+                   ~align_items: "center"
+                   ~padding_top: "10px")
+        div:
+          ~style: (css:
+                     ~display: "flex"
+                     ~flex_direction: "row"
+                     ~align_items: "center")
+          img:
+            ~src: "rhombus-logo.svg"
+            ~width: 470 / 4.0
+            ~height: 329 / 4.0
+            ~style: (css:
+                       ~vertical_align: "middle")
+          span:
+            ~style: (css:
+                       ~margin_top: "20px"
+                       ~vertical_align: "middle"
+                       ~padding_left: "10px")
+            namefont:
+              @str{Download}
+        div:
+          ~style: (css:
+                     ~max_width: "600px"
+                     ~margin: "2em 0 0 0")
+          prose:
+            @str{Two options for installing Rhombus:}
+          p:
+            ~style: (css:
+                       ~margin: "2em 0 0 0")
+            row:
+              button:
+                ~href: "https://users.cs.utah.edu/plt/rhombus-snapshots/"
+                @str{Install a snapshot Racket with Rhombus included}
+          p:
+            small_prose:
+              "This is a good option if you don’t already have Racket"
+              "—at least, in the short term and for common machine types."
+              " The snapshot-specific packagae catalog will eventually expire,"
+              " unlike a regular Racket distribution."
+          p:
+            ~style: (css:
+                       ~margin: "2em 0 0 0")
+            row:
+              button:
+                ~href: "https://download.racket-lang.org/"
+                @str{Install a regular Racket distribution}
+          p:
+            prose:
+              "Then, install the "
+              b:
+                tt: "rhombus"
+              " package in one of these ways:"
+          ul:
+            li:
+              p:
+                prose:
+                  "In DrRacket, choose “Install package...” from the “File” menu"
+              p:
+                prose:
+                  "Enter "
                   b:
-                    "early adopters"
-                  "—complete enough and stable enough to be useful."
-  )
+                    tt:
+                      "rhombus"
+                  " as the package to install."
+            li:
+              p:
+                prose:
+                  "On the command line, run "
+              p:
+                ~style: (css:
+                           ~margin_left: "2em")
+                prose:
+                  b:
+                    tt:
+                      "raco pkg install rhombus"
+          p:
+            small_prose:
+              "This is a good option if you already have Racket,"
+              " need more install options, or need longer-term support."
+)
 
 fun install(path :: Path):
   let to = path.name()

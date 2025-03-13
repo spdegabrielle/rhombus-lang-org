@@ -10,15 +10,20 @@ def slide_show_style:
   @str|{
 /* * {box-sizing:border-box} */
 
+body {
+ font-family: 'Charter-Racket', serif
+ font-size: 14pt
+}
+
 pre {
- font-familt: "'Fira-Mono', monospace"
+ font-family: 'Fira-Mono', monospace;
 }
 
 /* Slideshow container */
 .slideshow-container {
   display: flex; flex-direction: column; align-items: center;
-  width: 350pt;
-  height: 200pt;
+  width: 400pt;
+  height: 225pt;
   position: relative;
   margin: auto;
 }

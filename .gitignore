@@ -6,6 +6,6 @@ doc/
 .#*
 .DS_Store
 
-index.html
-rhombus-logo.svg
-racket-logo.svg
+*.html
+*.svg
+

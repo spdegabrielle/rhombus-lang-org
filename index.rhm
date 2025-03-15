@@ -13,6 +13,7 @@ import:
 
 def name_font = "'Cooper-Hewitt'"
 def text_font = "'Charter-Racket', serif"
+def text_size = "14pt"
 
 span.def namefont:
   ~font_family: name_font
@@ -20,11 +21,17 @@ span.def namefont:
 
 span.def prose:
   ~font_family: text_font
-  ~font_size: "14pt"
+  ~font_size: text_size
 
 span.def small_prose:
   ~font_family: text_font
   ~font_size: "12pt"
+
+div.def prose_column:
+  ~font_family: text_font
+  ~font_size: text_size
+  ~max_width: "40em"
+  ~margin: "auto"
 
 div.def slideshow_container:«»
 a.def next:«»
@@ -218,6 +225,26 @@ fun write(dest, doc):
     println("<!DOCTYPE html>")
     write_html(doc)
 
+fun rhombus_header(title):  
+  div:
+    ~style: (css:
+               ~display: "flex"
+               ~flex_direction: "row"
+               ~align_items: "center")
+    img:
+      ~src: "rhombus-logo.svg"
+      ~width: 470 / 4.0
+      ~height: 329 / 4.0
+      ~style: (css:
+                 ~vertical_align: "middle")
+    span:
+      ~style: (css:
+                 ~margin_top: "20px"
+                 ~vertical_align: "middle"
+                 ~padding_left: "10px")
+      namefont:
+        title
+
 write(
   "index.html",      
   html:
@@ -232,24 +259,7 @@ write(
                    ~flex_direction: "column"
                    ~align_items: "center"
                    ~padding_top: "10px")
-        div:
-          ~style: (css:
-                     ~display: "flex"
-                     ~flex_direction: "row"
-                     ~align_items: "center")
-          img:
-            ~src: "rhombus-logo.svg"
-            ~width: 470 / 4.0
-            ~height: 329 / 4.0
-            ~style: (css:
-                       ~vertical_align: "middle")
-          span:
-            ~style: (css:
-                       ~margin_top: "20px"
-                       ~vertical_align: "middle"
-                       ~padding_left: "10px")
-            namefont:
-              @str{Rhombus}
+        rhombus_header("Rhombus")
         div:
           ~style: (css: ~padding: "20px")
           prose:
@@ -298,6 +308,14 @@ write(
                 "... which means that Rhombus is compiled to machine code on-the-fly, "
                 "benefits from a mature tool chain and package system, "
                 "and has many practical libraries within reach."
+            div:
+              ~style: (css: ~padding_top: "0.5em")
+              small_prose:
+                "Why a new language? See "
+                a:
+                  ~href: "goal.html"
+                  "Rhombus Goals"
+                "."
           tabular:
             ~style: (css:
                        ~gap: "1em"
@@ -344,24 +362,7 @@ write(
                    ~flex_direction: "column"
                    ~align_items: "center"
                    ~padding_top: "10px")
-        div:
-          ~style: (css:
-                     ~display: "flex"
-                     ~flex_direction: "row"
-                     ~align_items: "center")
-          img:
-            ~src: "rhombus-logo.svg"
-            ~width: 470 / 4.0
-            ~height: 329 / 4.0
-            ~style: (css:
-                       ~vertical_align: "middle")
-          span:
-            ~style: (css:
-                       ~margin_top: "20px"
-                       ~vertical_align: "middle"
-                       ~padding_left: "10px")
-            namefont:
-              @str{Download}
+        rhombus_header("Download")
         div:
           ~style: (css:
                      ~max_width: "600px"
@@ -379,7 +380,7 @@ write(
             small_prose:
               "This is a good option if you don’t already have Racket"
               "—at least, in the short term and for common machine types."
-              " The snapshot-specific packagae catalog will eventually expire,"
+              " The snapshot-specific package catalog will eventually expire,"
               " unlike a regular Racket distribution."
           p:
             ~style: (css:
@@ -421,6 +422,81 @@ write(
             small_prose:
               "This is a good option if you already have Racket,"
               " need more install options, or need longer-term support."
+)
+
+write(
+  "goal.html",      
+  html:
+    head:
+      usual_head      
+      title:
+        @str{Rhombus Goals}
+    body:
+      div:
+        ~style: (css:
+                   ~display: "flex"
+                   ~flex_direction: "column"
+                   ~align_items: "center"
+                   ~padding_top: "10px")
+        rhombus_header("Rhombus Goals")
+      prose_column:
+        p:
+          @str{Modern programming languages reflect a consensus on basic
+               constructs, including functional abstraction,
+               lexically scoped variables, closures, objects, and pattern matching. Why, then,
+               are we creating yet another general-purpose programming language?}
+        p:
+          @str{Beyond the basics, there are still more good ideas for programming constructs
+               than can fit in any one language specification. Furthermore, specific domains benefit
+               from language support that is tailored to the domain.}
+          " "
+          i: "Language extensibility"
+          " "
+          @str{helps to balance the competing goals of a manageable language size versus fit-to-purpose
+               for a wide range of tasks.}
+        p:
+          @str{Many newer languages include a}
+          " "
+          i: "macro system"
+          " "
+          @str{to enable extensibility, but
+               few would argue that the new batch of macro systems have achieved the
+               expressiveness and fluidity of macros as they exist within the
+               Lisp tradition, which includes}
+          " "
+          a:
+            ~href: "https://racket-lang.org/"
+            "Racket"
+          @str{. At the same time, that expressiveness has been difficult to detangle
+               from Lisp’s minimalistic, parenthesis-oriented notation.}
+        p:
+          @str{Rhombus is designed to be}
+          ul:
+            li:
+              p:
+                @str{approachable and easy-to-use for everyday purposes (that do not need macros),
+                     which in part means a conventional syntax; and}
+            li:
+              p:
+                @str{as extensible as Racket, while making Racket's state-of-the-art facilities
+                     more consistent and accessible to a wide audience.}
+        p:
+          ~style: (css: ~margin_top: "2em")
+          @str{More resources:}
+          ul:
+            li:
+              a:
+                ~href: "https://www.youtube.com/watch?v=hkiy1rmKA48"
+                "Recorded talk"
+              " from OOPSLA’23"
+            li:
+              a:
+                ~href: "https://doi.org/10.1145/3622818"
+                "Rhombus: A New Spin on Macros without All the Parentheses"
+            li:
+              a:
+                ~href: "https://dl.acm.org/doi/10.1145/3127323"
+                "A Programmable Programming Language"
 )
 
 fun install(path :: Path):

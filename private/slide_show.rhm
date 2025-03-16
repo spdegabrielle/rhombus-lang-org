@@ -103,7 +103,8 @@ pre {
 }
 
 a {
- text-decoration: none
+ text-decoration: none;
+ color: rgb(0, 119, 170);
 }
 
 /* Fading animation */

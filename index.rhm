@@ -263,7 +263,12 @@ write(
         div:
           ~style: (css: ~padding: "20px")
           prose:
-            @str{Rhombus is a general-purpose programming language that is easy to use and uniquely customizable.}
+            @str{Rhombus is a general-purpose programming language that is easy to use and}
+            " "
+            a:
+              ~href: "goal.html"
+              "uniquely customizable"
+            @str{.}
         div:
           ~style: (css:
                      ~display: "flex"
@@ -474,7 +479,7 @@ write(
           ul:
             li:
               p:
-                @str{approachable and easy-to-use for everyday purposes (that do not need macros),
+                @str{approachable and easy to use for everyday purposes (that do not need macros),
                      which in part means a conventional syntax; and}
             li:
               p:

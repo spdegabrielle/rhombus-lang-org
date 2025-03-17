@@ -148,7 +148,7 @@ def examples:
        // ⇒ [Posn(6, 5)]
      ),
     (@rhombusblock_etc():
-       // efficient funtional data structures
+       // efficient functional data structures
 
        class Tree(val, children :: List.of(Tree)):
          method flatten(): // O(N lg N) for N `val`s

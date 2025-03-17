@@ -171,8 +171,8 @@ def examples:
          | '$lhs ... * $rhs ...':
              interp('$lhs ...') * interp('$rhs ...')
                              
-       interp('3 * 4 + 1') // '' quotes syntax, not a string
-       // ⇒ 8
+       interp('1 + 3 * 4') // '' quotes syntax, not a string
+       // ⇒ 13
      ),
     (@rhombusblock_etc():
        // macros
